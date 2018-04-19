@@ -1,9 +1,6 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 require 'Connection.php';
-$conn = (new Connection())->getConnection();
+require 'Repository/BookRepository.php';
 
 function redirect($url = '/knygos/') {
     header('Location: ' . $url);
@@ -13,11 +10,11 @@ function redirect($url = '/knygos/') {
 if (!isset($_GET['id']))
     redirect();
 
-$result = $conn->prepare('SELECT b.*, a.name AS author FROM Books b INNER JOIN Authors a ON a.authorId = b.authorId WHERE bookId = :bookId');
-$result->execute([':bookId' => $_GET['id']]);
-if ($result->rowCount() == 0)
+$repo = new BookRepository();
+$book = $repo->getById($_GET['id']);
+
+if (!$book)
     redirect();
-$row = $result->fetch(PDO::FETCH_OBJ);
 
 include 'partials/header.php';
 ?>
@@ -26,19 +23,19 @@ include 'partials/header.php';
 		<table>
 			<tr>
 				<td><b>ID</b></td>
-				<td><?= $row->bookId ?></td>
+				<td><?= $book->getBookId() ?></td>
 			</tr>
             <tr>
 				<td><b>Author</b></td>
-				<td><?= $row->author ?></td>
+				<td><?= $book->getAuthor() ?></td>
 			</tr>
             <tr>
 				<td><b>Title</b></td>
-				<td><?= $row->title ?></td>
+				<td><?= $book->getTitle() ?></td>
 			</tr>
             <tr>
 				<td><b>Year</b></td>
-				<td><?= $row->year ?></td>
+				<td><?= $book->getYear() ?></td>
 			</tr>
 		</table>
 <?php

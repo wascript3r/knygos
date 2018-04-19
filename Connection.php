@@ -3,20 +3,14 @@ require 'config.php';
 
 class Connection
 {
-	private $conn;
+	private static $conn = null;
 
-	public function __construct()
+	public static function getConnection()
 	{
-		try {
-			$this->conn = new PDO('mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8', DB_USER, DB_PASSWORD);
-			$this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		} catch (PDOException $e) {
-			die('An unknown error occurred. Please try again later.');
+		if (!self::$conn) {
+			self::$conn = new PDO('mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8', DB_USER, DB_PASSWORD);
+			self::$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		}
-	}
-
-	public function getConnection()
-	{
-		return $this->conn;
+		return self::$conn;
 	}
 }

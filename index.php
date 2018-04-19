@@ -1,8 +1,9 @@
 <?php
 require 'Connection.php';
-$conn = (new Connection())->getConnection();
+require 'Repository/BookRepository.php';
 
-$result = $conn->query('SELECT bookId, title FROM Books b INNER JOIN Authors a ON a.authorId = b.authorId ORDER BY bookId DESC');
+$repo = new BookRepository();
+$books = $repo->getAll();
 
 include 'partials/header.php';
 ?>
@@ -12,11 +13,11 @@ include 'partials/header.php';
 				<th>Title</th>
 			</tr>
 		<?php
-		while ($row = $result->fetch(PDO::FETCH_OBJ)) {
+		foreach ($books as $book) {
 			?>
 			<tr>
-				<td><?= $row->bookId ?></td>
-				<td><a href="view.php?id=<?= $row->bookId ?>"><?= $row->title ?></a></td>
+				<td><?= $book->getBookId() ?></td>
+				<td><a href="view.php?id=<?= $book->getBookId() ?>"><?= $book->getTitle() ?></a></td>
 			</tr>
 			<?php
 		}
